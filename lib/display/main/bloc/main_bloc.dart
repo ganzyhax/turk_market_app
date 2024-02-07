@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:turkmarket_app/api/firebase_notification.dart';
 import 'package:turkmarket_app/display/cart/cart_screen.dart';
 import 'package:turkmarket_app/display/categories/categories_screen.dart';
 import 'package:turkmarket_app/display/favourite/favourite_screen.dart';
@@ -40,7 +44,24 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           ];
         }
         emit(MainLoaded(index: index, screens: screens));
+        if (Platform.isAndroid) {
+          FirebaseMessaging.instance.getInitialMessage().then((message) {
+            if (message != null) {
+              print(message);
+            }
+          });
+
+          FirebaseMessaging.onMessage.listen((message) {
+            if (message.notification != null) {}
+            print(message);
+            LocalNotificationService.display(message);
+          });
+          FirebaseMessaging.onMessageOpenedApp.listen((message) {
+            print(message);
+          });
+        } else if (Platform.isIOS) {}
       }
+
       if (event is MainChangeIndex) {
         final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -64,9 +85,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           bool isLogged = await prefs.getBool('isLogged') ?? false;
           if (isLogged) {
             screens = [
+              HomeScreen(),
               CategoriesScreen(),
               FavouriteScreen(),
-              HomeScreen(),
               CartScreen(),
               ProfileScreen(),
             ];

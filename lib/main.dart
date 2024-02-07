@@ -1,9 +1,9 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:turkmarket_app/api/firebase_notification_service.dart';
 import 'package:turkmarket_app/display/cart/bloc/cart_bloc.dart';
 import 'package:turkmarket_app/display/categories/bloc/categories_bloc.dart';
 import 'package:turkmarket_app/display/main/bloc/main_bloc.dart';
@@ -13,10 +13,12 @@ import 'package:turkmarket_app/display/products/bloc/products_bloc.dart';
 import 'package:turkmarket_app/display/profile/bloc/user_bloc.dart';
 import 'package:turkmarket_app/firebase_options.dart';
 import 'package:turkmarket_app/widgets/filter/bloc/filter_bloc.dart';
+// jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore upload-turkmarket-keystore.jks build/app/outputs/bundle/release/app-release.aab upload
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await FirebaseNotificationService().load();
   runApp(const MyApp());
 }
 

@@ -78,73 +78,86 @@ class AddressScreen extends StatelessWidget {
                                     topRight: Radius.circular(30.0)),
                               ),
                               builder: (BuildContext context) {
-                                return Container(
-                                  height:
-                                      MediaQuery.of(context).size.height / 1.2,
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child:
-                                          ListView(shrinkWrap: true, children: [
-                                        Text(
-                                          'Добавьте адрес',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 16),
-                                        TextFormField(
-                                          controller: name,
-                                          decoration:
-                                              InputDecoration(labelText: 'Имя'),
-                                        ),
-                                        SizedBox(height: 16),
-                                        TextFormField(
-                                          controller: phone,
-                                          decoration: InputDecoration(
-                                              labelText: 'Телефон'),
-                                          keyboardType: TextInputType.phone,
-                                        ),
-                                        SizedBox(height: 16),
-                                        TextFormField(
-                                          controller: country,
-                                          decoration: InputDecoration(
-                                              labelText: 'Страна'),
-                                        ),
-                                        SizedBox(height: 16),
-                                        TextFormField(
-                                          controller: city,
-                                          decoration: InputDecoration(
-                                              labelText: 'Город'),
-                                        ),
-                                        SizedBox(height: 16),
-                                        TextFormField(
-                                          controller: adress,
-                                          decoration: InputDecoration(
-                                              labelText: 'Адресс'),
-                                        ),
-                                        SizedBox(height: 16),
-                                        TextFormField(
-                                          controller: postcode,
-                                          decoration: InputDecoration(
-                                              labelText: 'Индекс код'),
-                                          keyboardType: TextInputType.number,
-                                        ),
-                                        SizedBox(height: 16),
-                                        CustomButton(
-                                            function: () {
-                                              BlocProvider.of<UserBloc>(context)
-                                                  .add(UserAdressAdd(
-                                                      name: name.text,
-                                                      street: adress.text,
-                                                      phone: phone.text,
-                                                      postcode: postcode.text,
-                                                      city: city.text,
-                                                      country: country.text));
-                                              Navigator.pop(context);
-                                            },
-                                            title: 'Сохранить')
-                                      ])),
+                                return SingleChildScrollView(
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height /
+                                        1.2,
+                                    child: Padding(
+                                      padding: EdgeInsets.all(20),
+                                      child: Padding(
+                                          padding:
+                                              MediaQuery.of(context).viewInsets,
+                                          child: ListView(
+                                              shrinkWrap: true,
+                                              children: [
+                                                Text(
+                                                  'Добавьте адрес',
+                                                  style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextFormField(
+                                                  controller: name,
+                                                  decoration: InputDecoration(
+                                                      labelText: 'Имя'),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextFormField(
+                                                  controller: phone,
+                                                  decoration: InputDecoration(
+                                                      labelText: 'Телефон'),
+                                                  keyboardType:
+                                                      TextInputType.phone,
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextFormField(
+                                                  controller: country,
+                                                  decoration: InputDecoration(
+                                                      labelText: 'Страна'),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextFormField(
+                                                  controller: city,
+                                                  decoration: InputDecoration(
+                                                      labelText: 'Город'),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextFormField(
+                                                  controller: adress,
+                                                  decoration: InputDecoration(
+                                                      labelText: 'Адресс'),
+                                                ),
+                                                SizedBox(height: 16),
+                                                TextFormField(
+                                                  controller: postcode,
+                                                  decoration: InputDecoration(
+                                                      labelText: 'Индекс код'),
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                ),
+                                                SizedBox(height: 16),
+                                                CustomButton(
+                                                    function: () {
+                                                      BlocProvider.of<UserBloc>(
+                                                              context)
+                                                          .add(UserAdressAdd(
+                                                              name: name.text,
+                                                              street:
+                                                                  adress.text,
+                                                              phone: phone.text,
+                                                              postcode:
+                                                                  postcode.text,
+                                                              city: city.text,
+                                                              country: country
+                                                                  .text));
+                                                      Navigator.pop(context);
+                                                    },
+                                                    title: 'Сохранить')
+                                              ])),
+                                    ),
+                                  ),
                                 );
                               },
                             );

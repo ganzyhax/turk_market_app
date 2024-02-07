@@ -24,7 +24,7 @@ class SignInScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 16),
                   const Text(
-                    "Возвращением!",
+                    "С возвращением!",
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 24,

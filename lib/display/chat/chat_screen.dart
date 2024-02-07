@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:turkmarket_app/constants.dart';
 import 'package:turkmarket_app/display/profile/bloc/user_bloc.dart';
 import 'package:turkmarket_app/gateway/functoins.dart';
+import 'package:turkmarket_app/gateway/gateway.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -13,9 +14,11 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   TextEditingController msg = TextEditingController();
-  _chatBubble(var text, bool isMe, bool isSameUser) {
+  _chatBubble(
+      var text, bool isMe, bool isSameUser, bool isReaded, bool isLast) {
     if (isMe) {
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: <Widget>[
           Container(
             alignment: Alignment.topRight,
@@ -44,6 +47,11 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
           ),
+          (isLast)
+              ? (isMe && isReaded)
+                  ? Text('Прочитано')
+                  : Text('Не прочитано')
+              : Container(),
           !isSameUser
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.end,
@@ -181,7 +189,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     .set({
                   "name": 'User',
                   "id": id,
+                  'isAdminRead': false,
                   "chating": userSearchItems,
+                  'date': Timestamp.now()
                 });
                 msg.text = '';
               } else {
@@ -191,7 +201,9 @@ class _ChatScreenState extends State<ChatScreen> {
                     .set({
                   "name": 'User',
                   "id": id,
+                  'isAdminRead': false,
                   "chating": [msg.text],
+                  'date': Timestamp.now()
                 });
                 msg.text = '';
               }
@@ -235,7 +247,6 @@ class _ChatScreenState extends State<ChatScreen> {
         child: BlocBuilder<UserBloc, UserState>(
           builder: (context, state) {
             if (state is UserLoaded) {
-              print(state.userId);
               return Column(
                 children: <Widget>[
                   Expanded(
@@ -247,11 +258,12 @@ class _ChatScreenState extends State<ChatScreen> {
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
                           if (!snapshot.hasData) {
-                            print('noData');
                             return SizedBox();
                           } else {
                             var userDocument = snapshot.data.data();
-
+                            userDocument['isUserRead'] = true;
+                            FirestoreService().updateDocument(
+                                'chats', state.userId + '?chat', userDocument);
                             try {
                               return ListView.builder(
                                 reverse: false,
@@ -263,20 +275,29 @@ class _ChatScreenState extends State<ChatScreen> {
                                   if (userDocument['chating'][index]
                                       .toString()
                                       .contains('}sup')) {
-                                    print(userDocument['chating'][index]);
                                     return _chatBubble(
                                         userDocument['chating'][index]
                                             .toString()
                                             .split('}')[0],
                                         false,
-                                        true);
+                                        true,
+                                        userDocument['isAdminRead'] ?? true,
+                                        (userDocument['chating'].length - 1 ==
+                                                index)
+                                            ? true
+                                            : false);
                                   } else {
                                     return _chatBubble(
                                         userDocument['chating'][index]
                                             .toString()
                                             .split('}')[0],
                                         true,
-                                        true);
+                                        true,
+                                        userDocument['isAdminRead'] ?? true,
+                                        (userDocument['chating'].length - 1 ==
+                                                index)
+                                            ? true
+                                            : false);
                                   }
                                 },
                               );

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:turkmarket_app/display/product/product_screen.dart';
 import 'package:turkmarket_app/display/products/bloc/products_bloc.dart';
 import 'package:turkmarket_app/display/products/products_screen.dart';
-
-import 'package:turkmarket_app/models/category.dart';
 
 class Categories extends StatelessWidget {
   Categories({
@@ -15,6 +12,15 @@ class Categories extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    int indexMan = -1;
+    for (var i = 0; i < data.length; i++) {
+      if (data[i]['name'] == 'Для мужчин') {
+        indexMan = i;
+      }
+    }
+    if (indexMan == -1) {
+      indexMan = 0;
+    }
     return SizedBox(
       height: 90,
       child: ListView.separated(
@@ -24,7 +30,7 @@ class Categories extends StatelessWidget {
             onTap: () {
               BlocProvider.of<ProductsBloc>(context)
                 ..add(ProductsSearhCategory(
-                    category: data[0]['subCategories'][index]['name']));
+                    category: data[indexMan]['subCategories'][index]['name']));
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProductsScreen()),
@@ -39,14 +45,14 @@ class Categories extends StatelessWidget {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       image: NetworkImage(
-                        data[0]['subCategories'][index]['image'],
+                        data[indexMan]['subCategories'][index]['image'],
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  data[0]['subCategories'][index]['name'],
+                  data[indexMan]['subCategories'][index]['name'],
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                   ),
@@ -56,7 +62,7 @@ class Categories extends StatelessWidget {
           );
         },
         separatorBuilder: (context, index) => const SizedBox(width: 20),
-        itemCount: data[0]['subCategories'].length,
+        itemCount: data[indexMan]['subCategories'].length,
       ),
     );
   }

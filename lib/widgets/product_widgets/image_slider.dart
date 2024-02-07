@@ -15,6 +15,7 @@ class ImageSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    images.removeAt(0);
     return SizedBox(
       height: 350,
       child: PageView.builder(

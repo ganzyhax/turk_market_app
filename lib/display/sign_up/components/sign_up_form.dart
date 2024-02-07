@@ -187,7 +187,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 }
               }
             },
-            child: const Text("Продолжать"),
+            child: const Text("Продолжить"),
           ),
         ],
       ),

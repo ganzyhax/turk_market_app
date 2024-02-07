@@ -216,56 +216,105 @@ class _ProductScreenState extends State<ProductScreen> {
                                               ['colorSizes']
                                           .length,
                                       (index) => GestureDetector(
-                                        onTap: () {
-                                          setState(() {
-                                            currentNumber = 0;
-                                            currentSize = index;
-                                            maxQuandtity = int.parse(
-                                                widget.product['colors']
-                                                        [currentColor]
-                                                    ['sizesCount'][index]);
-                                          });
-                                        },
-                                        child: AnimatedContainer(
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                          width: 35,
-                                          height: 35,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: currentSize == index
-                                                ? Colors.white
-                                                : Color.fromARGB(
-                                                    15, 43, 43, 45),
-                                            border: currentSize == index
-                                                ? Border.all(
-                                                    color: Colors.black,
-                                                    width: 2,
-                                                  )
-                                                : null,
-                                          ),
-                                          padding: currentSize == index
-                                              ? const EdgeInsets.all(2)
-                                              : null,
-                                          margin:
-                                              const EdgeInsets.only(right: 15),
-                                          child: Container(
-                                            width: 30,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              color: Color.fromARGB(
-                                                  15, 56, 56, 60),
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Center(
-                                              child: Text(
+                                          onTap: () {
+                                            setState(() {
+                                              currentNumber = 1;
+                                              currentSize = index;
+                                              maxQuandtity = int.parse(
                                                   widget.product['colors']
                                                           [currentColor]
-                                                      ['colorSizes'][index]),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                                      ['sizesCount'][index]);
+                                            });
+                                          },
+                                          child: (widget
+                                                      .product['colors']
+                                                          [currentColor]
+                                                          ['colorSizes'][index]
+                                                      .length <
+                                                  4)
+                                              ? AnimatedContainer(
+                                                  duration: Duration(
+                                                      milliseconds: 300),
+                                                  width: 40,
+                                                  height: 35,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: currentSize == index
+                                                        ? Colors.white
+                                                        : Color.fromARGB(
+                                                            15, 43, 43, 45),
+                                                    border: currentSize == index
+                                                        ? Border.all(
+                                                            color: Colors.black,
+                                                            width: 2,
+                                                          )
+                                                        : null,
+                                                  ),
+                                                  padding: currentSize == index
+                                                      ? const EdgeInsets.all(2)
+                                                      : null,
+                                                  margin: const EdgeInsets.only(
+                                                      right: 15),
+                                                  child: Container(
+                                                    width: 30,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                      color: Color.fromARGB(
+                                                          15, 56, 56, 60),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(widget
+                                                                      .product[
+                                                                  'colors']
+                                                              [currentColor][
+                                                          'colorSizes'][index]),
+                                                    ),
+                                                  ),
+                                                )
+                                              : AnimatedContainer(
+                                                  duration: Duration(
+                                                      milliseconds: 300),
+                                                  width: 110,
+                                                  height: 40,
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    shape: BoxShape.rectangle,
+                                                    color: currentSize == index
+                                                        ? Colors.white
+                                                        : Color.fromARGB(
+                                                            15, 43, 43, 45),
+                                                    border: currentSize == index
+                                                        ? Border.all(
+                                                            color: Colors.black,
+                                                            width: 2,
+                                                          )
+                                                        : null,
+                                                  ),
+                                                  padding: currentSize == index
+                                                      ? const EdgeInsets.all(2)
+                                                      : null,
+                                                  margin: const EdgeInsets.only(
+                                                      right: 15),
+                                                  child: Container(
+                                                    width: 30,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                      color: Color.fromARGB(
+                                                          15, 56, 56, 60),
+                                                      shape: BoxShape.rectangle,
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(widget
+                                                                      .product[
+                                                                  'colors']
+                                                              [currentColor][
+                                                          'colorSizes'][index]),
+                                                    ),
+                                                  ),
+                                                )),
                                     ),
                                   )
                                 : Text('Нет в наличии'),

@@ -156,11 +156,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisSpacing: 20,
                               mainAxisSpacing: 20,
                             ),
-                            itemCount: data!.length,
+                            itemCount: 8,
                             itemBuilder: (context, index) {
                               return ProductCard(
                                 curr: state.currency,
-                                product: data[index],
+                                product: data![index],
                                 isLiked:
                                     (state.userLikes.contains(data[index]['id'])
                                         ? true
