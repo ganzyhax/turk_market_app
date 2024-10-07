@@ -27,7 +27,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
         backgroundColor: kcontentColor,
         centerTitle: true,
         title: const Text(
-          "Понравшився",
+          "Понравившиеся",
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),

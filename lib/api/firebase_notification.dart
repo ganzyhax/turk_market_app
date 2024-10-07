@@ -36,7 +36,6 @@ class LocalNotificationService {
         android: AndroidNotificationDetails(
           "turkMarketMobileApp",
           "turkMarketMobileApp_channel",
-          "basic channel for notification",
           importance: Importance.max,
           priority: Priority.high,
         ),
@@ -73,7 +72,6 @@ void createChannels() {
   //Создаем каналы для уведомлений
   AndroidNotificationChannel notificationChannel = AndroidNotificationChannel(
     "turkMarketMobileApp",
-    "Канал по умолчанию",
     "Канал по умолчанию",
     importance: Importance.max,
     playSound: true,

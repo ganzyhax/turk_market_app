@@ -24,30 +24,8 @@ class SignUpScreen extends StatelessWidget {
                 children: [
                   const SizedBox(height: 16),
                   const Text("Регистрация Аккаунта", style: headingStyle),
-                  const Text(
-                    "Заполните свои данные или продолжите работу\nв социальных сетях.",
-                    textAlign: TextAlign.center,
-                  ),
                   const SizedBox(height: 16),
                   const SignUpForm(),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SocalCard(
-                        icon: "assets/icons/google-icon.svg",
-                        press: () {},
-                      ),
-                      SocalCard(
-                        icon: "assets/icons/facebook-2.svg",
-                        press: () {},
-                      ),
-                      SocalCard(
-                        icon: "assets/icons/twitter.svg",
-                        press: () {},
-                      ),
-                    ],
-                  ),
                   const SizedBox(height: 16),
                   Text(
                     'Продолжая, вы подтверждаете, что\nсогласны с нашими Условиями использования.',

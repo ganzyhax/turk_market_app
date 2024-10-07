@@ -13,8 +13,8 @@ import 'package:turkmarket_app/display/home/home_screen.dart';
 import 'package:turkmarket_app/display/main/bloc/main_bloc.dart';
 import 'package:turkmarket_app/display/profile/profile_screen.dart';
 
-class MainScreen extends StatelessWidget {
-  MainScreen({super.key});
+class CustomNavigationBar extends StatelessWidget {
+  CustomNavigationBar({super.key});
 
   @override
   Widget build(BuildContext context) {

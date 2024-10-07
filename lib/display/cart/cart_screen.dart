@@ -70,6 +70,7 @@ class _CartScreenState extends State<CartScreen> {
                             snapshot.data!.forEach((doc) {
                               totalSum += (doc['price'] as int) *
                                   int.parse(state.userBuckets[index]['count']);
+
                               index++; // Assuming 'price' is a field in your documents
                             });
                             BlocProvider.of<UserBloc>(context)
@@ -203,7 +204,9 @@ class _CartScreenState extends State<CartScreen> {
                   child: Text('Загрузка'),
                 );
               }
-              return Container();
+              return Center(
+                child: CircularProgressIndicator(),
+              );
             },
           );
         }

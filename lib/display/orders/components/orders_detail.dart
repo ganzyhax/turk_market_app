@@ -16,10 +16,13 @@ class OrdersDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     List productsId = [];
     String status = '';
+    print(data['status']);
     if (data['status'] == 'inprocess') {
       status = 'Рассмотрение';
+    } else if (data['status'] == 'onroad') {
+      status = 'На дороге';
     } else {
-      status = 'Рассмотрение';
+      status = 'Доставлено';
     }
     for (var i = 0; i < data['productData'].length; i++) {
       productsId.add(data['productData'][i]['productId']);
@@ -148,8 +151,9 @@ class OrdersDetail extends StatelessWidget {
                             data: data['userData'], index: 1, isEdit: false),
                       ),
                       SizedBox(
-                        height: 5,
+                        height: 15,
                       ),
+                      Divider(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

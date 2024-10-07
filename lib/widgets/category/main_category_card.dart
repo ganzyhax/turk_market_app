@@ -36,9 +36,11 @@ class CategoryCard extends StatelessWidget {
                     color: Colors
                         .white, // You can change the background color as needed
                   ),
-                  child: Image.network(
-                    data['image'], // Replace with your image URL
-                    fit: BoxFit.contain,
+                  child: FadeInImage.assetNetwork(
+                    placeholder:
+                        'assets/images/no_image.png', // This won't directly work here as intended
+                    image: data['image'],
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),

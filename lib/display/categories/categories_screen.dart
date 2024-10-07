@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turkmarket_app/constants.dart';
 import 'package:turkmarket_app/display/categories/bloc/categories_bloc.dart';
 import 'package:turkmarket_app/display/categories/subcategories_screen.dart';
-import 'package:turkmarket_app/display/profile/bloc/user_bloc.dart';
 import 'package:turkmarket_app/widgets/category/main_category_card.dart';
 
 class CategoriesScreen extends StatelessWidget {
@@ -55,6 +56,11 @@ class CategoriesScreen extends StatelessWidget {
                           (index) => ListTile(
                             title: InkWell(
                               onTap: () {
+                                BlocProvider.of<CategoriesBloc>(context).add(
+                                    CategoriesSetSelectedCategory(
+                                        mainCategory: data['name'],
+                                        category: data['subCategories'][index]
+                                            ['name']));
                                 BlocProvider.of<CategoriesBloc>(context).add(
                                     CategoriesChooseIndexSubCategory(
                                         index: index));

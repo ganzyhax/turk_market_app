@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turkmarket_app/constants.dart';
@@ -43,15 +45,16 @@ class SubCategoriesScreen extends StatelessWidget {
                             left: 15,
                           ),
                           child: Text(
-                            'Выберите котегорию',
+                            'Выберите категории',
                             style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                         )
                       : InkWell(
                           onTap: () {
-                            print('tappad');
                             BlocProvider.of<ProductsBloc>(context)
                               ..add(ProductsSearhSubCategory(
+                                  mainCategory: state.mainCategory,
+                                  category: state.category,
                                   subCategory: data[index - 1]));
 
                             Navigator.push(

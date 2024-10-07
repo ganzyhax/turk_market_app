@@ -22,7 +22,7 @@ class Categories extends StatelessWidget {
       indexMan = 0;
     }
     return SizedBox(
-      height: 90,
+      height: 140,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
@@ -38,15 +38,14 @@ class Categories extends StatelessWidget {
             },
             child: Column(
               children: [
-                Container(
-                  height: 60,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        data[indexMan]['subCategories'][index]['image'],
-                      ),
+                SizedBox(
+                  height: 80,
+                  width: 80,
+                  child: ClipOval(
+                    child: FadeInImage.assetNetwork(
+                      placeholder: 'assets/images/no_image.png',
+                      image: data[indexMan]['subCategories'][index]['image'],
+                      fit: BoxFit.cover,
                     ),
                   ),
                 ),
@@ -54,6 +53,7 @@ class Categories extends StatelessWidget {
                 Text(
                   data[indexMan]['subCategories'][index]['name'],
                   style: const TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

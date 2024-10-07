@@ -21,7 +21,7 @@ class ProductDescription extends StatelessWidget {
           ),
           alignment: Alignment.center,
           child: const Text(
-            "Description",
+            "Описание",
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,

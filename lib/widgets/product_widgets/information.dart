@@ -11,32 +11,74 @@ class ProductInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    double rate = 0.0;
+    try {
+      if (product['rate'] != null) {
+        var rateList = product['rate'] ?? [];
+        if (rateList.length > 1) {
+          for (var l = 0; l < rateList.length; l++) {
+            rate = rate + double.parse(rateList[l].toString());
+          }
+          rate = rate / rateList.length;
+        } else {
+          if (rateList.length == 1) {
+            rate = double.parse(rateList[0].toString());
+          }
+        }
+      }
+    } catch (e) {}
+    print('Final rate ' + rate.toString());
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          product['name'],
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              width: 220,
+              child: Text(
+                product['name'],
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Text(
+              "\$${product['price']}",
+              style: const TextStyle(
+                fontSize: 22,
+                color: Colors.black54,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              "${(int.parse(product['price'].toString()) * curr).toInt().toString()} руб",
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+                fontWeight: FontWeight.w400,
+              ),
+            )
+          ],
         ),
-        Text(
-          "\$${product['price']}",
-          style: const TextStyle(
-            fontSize: 22,
-            color: Colors.black54,
-            fontWeight: FontWeight.w600,
-          ),
+        Column(
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.star_border,
+                  color: Colors.amber,
+                  size: 40,
+                ),
+                Text(
+                  rate.toStringAsFixed(1),
+                  style: TextStyle(fontSize: 28),
+                ),
+              ],
+            ),
+          ],
         ),
-        Text(
-          "${(int.parse(product['price'].toString()) * curr).toInt().toString()} руб",
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black54,
-            fontWeight: FontWeight.w400,
-          ),
-        )
       ],
     );
   }

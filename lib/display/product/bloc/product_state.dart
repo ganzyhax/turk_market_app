@@ -6,5 +6,9 @@ sealed class ProductState {}
 final class ProductInitial extends ProductState {}
 
 class ProductLoaded extends ProductState {
-  ProductLoaded();
+  List rates;
+  bool isRated;
+  double localRate;
+  ProductLoaded(
+      {required this.rates, required this.isRated, required this.localRate});
 }

@@ -53,7 +53,9 @@ class OrderCard extends StatelessWidget {
                           Text(
                             (data['status'] == 'inprocess')
                                 ? 'Рассмотрение'
-                                : '?',
+                                : (data['status'] == 'onroad')
+                                    ? 'На дороге'
+                                    : 'Доставлено',
                             style: TextStyle(
                                 color: Colors.blue,
                                 fontWeight: FontWeight.w600),

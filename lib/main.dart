@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:turkmarket_app/api/firebase_not.dart';
 import 'package:turkmarket_app/api/firebase_notification_service.dart';
 import 'package:turkmarket_app/display/cart/bloc/cart_bloc.dart';
 import 'package:turkmarket_app/display/categories/bloc/categories_bloc.dart';
@@ -12,6 +12,7 @@ import 'package:turkmarket_app/display/payment/bloc/payment_bloc.dart';
 import 'package:turkmarket_app/display/products/bloc/products_bloc.dart';
 import 'package:turkmarket_app/display/profile/bloc/user_bloc.dart';
 import 'package:turkmarket_app/firebase_options.dart';
+import 'package:turkmarket_app/gateway/gateway.dart';
 import 'package:turkmarket_app/widgets/filter/bloc/filter_bloc.dart';
 // jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore upload-turkmarket-keystore.jks build/app/outputs/bundle/release/app-release.aab upload
 
@@ -19,6 +20,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await FirebaseNotificationService().load();
+  FirebaseNotificationsManager.initialize();
+  await FirestoreService().sortUserData();
   runApp(const MyApp());
 }
 
@@ -58,7 +61,10 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           textTheme: GoogleFonts.mulishTextTheme(),
         ),
-        home: MainScreen(),
+        home: MediaQuery(
+          child: CustomNavigationBar(),
+          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+        ),
       ),
     );
   }

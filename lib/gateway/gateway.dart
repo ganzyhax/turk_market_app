@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'dart:io';
@@ -8,6 +10,56 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FirestoreService {
   Dio _dio = new Dio();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  Future<void> sortUserData() async {
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      String userId = await prefs.getString('id') ?? '';
+      if (userId != '') {
+        try {
+          final CollectionReference<Map<String, dynamic>> users =
+              FirebaseFirestore.instance.collection('users');
+          DocumentSnapshot<Map<String, dynamic>> documentSnapshot =
+              await users.doc(userId).get();
+
+          final CollectionReference<Map<String, dynamic>> collectionProducts =
+              FirebaseFirestore.instance.collection('products');
+
+          if (documentSnapshot.exists) {
+            var userData = documentSnapshot.data();
+            for (var i = 0; i < userData!['bucket'].length; i++) {
+              log(userData.toString());
+              DocumentSnapshot<Map<String, dynamic>> documentProductsSnapshot =
+                  await collectionProducts
+                      .doc(userData['bucket'][i]['productId'])
+                      .get();
+
+              if (!documentProductsSnapshot.exists) {
+                userData['bucket'].removeAt(i);
+
+                await updateDocument('users', userId, userData);
+              }
+            }
+            for (var i = 0; i < userData['liked'].length; i++) {
+              DocumentSnapshot<Map<String, dynamic>> documentLikesSnapshot =
+                  await collectionProducts.doc(userData['liked'][i]).get();
+              if (!documentLikesSnapshot.exists) {
+                userData['liked'].removeAt(i);
+                await updateDocument('users', userId, userData);
+              }
+            }
+          } else {
+            // Document doesn't exist
+          }
+        } catch (e) {
+          // Error handling
+          log('Error fetching user data: $e');
+        }
+      }
+    } catch (e) {
+      log('Error creating document: ${e.toString()}');
+    }
+  }
 
   Future<String> createUser(Map<String, dynamic> userData) async {
     try {
@@ -25,6 +77,21 @@ class FirestoreService {
       await prefs.setBool('isLogged', true);
       print('User document created successfully!');
       return docId;
+    } catch (e) {
+      print('Error creating document: ${e.toString()}');
+      return "null";
+    }
+  }
+
+  Future<String> deleteUser(String id) async {
+    try {
+      // Reference to Firestore collection
+      DocumentReference documentReference =
+          FirebaseFirestore.instance.collection('users').doc(id);
+      // Delete the document
+      await documentReference.delete();
+      print('Document deleted successfully');
+      return 'good';
     } catch (e) {
       print('Error creating document: ${e.toString()}');
       return "null";

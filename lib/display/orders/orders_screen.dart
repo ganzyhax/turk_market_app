@@ -28,8 +28,10 @@ class OrderScreen extends StatelessWidget {
           builder: (context, state) {
             if (state is UserLoaded) {
               return StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('orders').snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection('orders')
+                    .where('userId', isEqualTo: state.userId)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Center(child: CircularProgressIndicator());

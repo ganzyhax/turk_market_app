@@ -13,8 +13,12 @@ class ProductsSearhCategory extends ProductsEvent {
 
 class ProductsSearhSubCategory extends ProductsEvent {
   final String subCategory;
-
-  ProductsSearhSubCategory({required this.subCategory});
+  final String category;
+  final String mainCategory;
+  ProductsSearhSubCategory(
+      {required this.subCategory,
+      required this.category,
+      required this.mainCategory});
 }
 
 class ProductsSearhSex extends ProductsEvent {
@@ -34,6 +38,10 @@ class ProductsSearhBrand extends ProductsEvent {
 
   ProductsSearhBrand({required this.brand});
 }
+
+class ProductsSearchLoadMoreScroll extends ProductsEvent {}
+
+class ProductsSearchClearMoreScroll extends ProductsEvent {}
 
 class ProductsSearchFilter extends ProductsEvent {
   String category = '';

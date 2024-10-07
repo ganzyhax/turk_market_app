@@ -87,7 +87,8 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
           productList.add(product);
         }
         DateTime now = DateTime.now();
-
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        String id = await prefs.getString('id') ?? '';
         orderId =
             await FirestoreService().addDocumentToFirestoreWithId('orders', {
           'status': 'inprocess',
@@ -95,13 +96,11 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
           'userData': event.userData,
           'checkPdf': _downloadURL,
           'createdAt': now,
+          'userId': id,
           'orderPrice': event.orderPrice
         });
         _pickedPdf = null;
         _downloadURL = '';
-
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        String id = await prefs.getString('id') ?? '';
         DocumentSnapshot<Map<String, dynamic>>? document =
             await FirestoreService().getDocumentById('users', id);
         Map<String, dynamic> data;

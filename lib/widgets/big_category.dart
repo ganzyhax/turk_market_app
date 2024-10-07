@@ -3,8 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:turkmarket_app/display/products/bloc/products_bloc.dart';
 import 'package:turkmarket_app/display/products/products_screen.dart';
 
-import 'package:turkmarket_app/models/category.dart';
-
 class BigCategory extends StatelessWidget {
   BigCategory({
     super.key,

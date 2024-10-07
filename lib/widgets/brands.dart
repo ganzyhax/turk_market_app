@@ -15,39 +15,38 @@ class Brands extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 90,
+      height: 140,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
           return Column(
             children: [
               InkWell(
-                onTap: () {
-                  BlocProvider.of<ProductsBloc>(context)
-                    ..add(ProductsSearhBrand(
-                        brand: data[0]['brands'][index]['brandName']));
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProductsScreen()),
-                  );
-                },
-                child: Container(
-                  height: 60,
-                  width: 60,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      image: NetworkImage(
-                        data[0]['brands'][index]['brandImage'],
+                  onTap: () {
+                    BlocProvider.of<ProductsBloc>(context)
+                      ..add(ProductsSearhBrand(
+                          brand: data[0]['brands'][index]['brandName']));
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ProductsScreen()),
+                    );
+                  },
+                  child: SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: ClipOval(
+                      child: FadeInImage.assetNetwork(
+                        placeholder: 'assets/images/no_image.png',
+                        image: data[0]['brands'][index]['brandImage'],
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
-                ),
-              ),
+                  )),
               const SizedBox(height: 5),
               Text(
                 data[0]['brands'][index]['brandName'],
                 style: const TextStyle(
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),

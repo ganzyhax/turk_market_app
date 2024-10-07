@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,13 +18,38 @@ import 'package:turkmarket_app/widgets/product_card.dart';
 import 'package:turkmarket_app/widgets/search_field.dart';
 
 class ProductsScreen extends StatefulWidget {
-  const ProductsScreen({super.key});
+  // final String? brand;
+  const ProductsScreen({
+    super.key,
+  });
 
   @override
   State<ProductsScreen> createState() => _ProductsScreenState();
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  ScrollController _scrollController = ScrollController();
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent) {
+      BlocProvider.of<ProductsBloc>(context)
+        ..add(ProductsSearchLoadMoreScroll());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<FilterBloc, FilterState>(
@@ -70,96 +97,113 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 leadingWidth: 60,
                 leading: IconButton(
                   icon: Icon(Icons.arrow_back, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () {
+                    BlocProvider.of<ProductsBloc>(context)
+                      ..add(ProductsSearchClearMoreScroll());
+                    Navigator.of(context).pop();
+                  },
                 ),
               ),
-              body: BlocBuilder<ProductsBloc, ProductsState>(
-                builder: (context, state2) {
-                  if (state2 is ProductsLoaded) {
-                    return StreamBuilder<QuerySnapshot>(
-                      stream: state2.query,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        }
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator(); // Display a loading indicator
-                        }
-                        if (!snapshot.hasData) {
-                          return Text('No data available');
-                        }
-                        final data = snapshot.data?.docs;
-
-                        return BlocBuilder<UserBloc, UserState>(
-                          builder: (context, state) {
-                            if (state is UserLoaded) {
-                              if (!data!.isEmpty) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: GridView.builder(
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    gridDelegate:
-                                        const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      crossAxisSpacing: 20,
-                                      mainAxisSpacing: 20,
-                                    ),
-                                    itemCount: data.length,
-                                    itemBuilder: (context, index) {
-                                      if (state2.isFilter == true) {
-                                        if (data[index]['colors'].any((color) =>
-                                                state2.selectedColors.contains(
-                                                    color['colorName'])) &&
-                                            (data[index]['colors']
-                                                    as List<dynamic>)
-                                                .any((color) =>
-                                                    color['colorSizes'].any(
-                                                        (size) => state2
-                                                            .selectedSizes
-                                                            .contains(size)))) {
-                                          return ProductCard(
-                                            curr: state.currency,
-                                            product: data[index],
-                                            isLiked: (state.userLikes.contains(
-                                                    data[index]['id']))
-                                                ? true
-                                                : false,
-                                          );
-                                        }
-                                      } else {
-                                        return ProductCard(
-                                          curr: state.currency,
-                                          product: data[index],
-                                          isLiked: (state.userLikes
-                                                  .contains(data[index]['id']))
-                                              ? true
-                                              : false,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                );
-                              } else {
-                                return Center(
-                                  child: Text('Товары не найдено'),
-                                );
-                              }
-                            }
-                            return Container(
-                              child: Text('Товары не найдено'),
+              body: SingleChildScrollView(
+                controller: _scrollController,
+                child: BlocBuilder<ProductsBloc, ProductsState>(
+                  builder: (context, state2) {
+                    if (state2 is ProductsLoaded) {
+                      return StreamBuilder<List<DocumentSnapshot>>(
+                        stream: state2.query.stream,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: Text('Товаров не найдено'),
                             );
-                          },
-                        );
-                      },
+                          }
+                          if (!snapshot.hasData) {
+                            return Text('No data available');
+                          }
+                          final data = snapshot.data;
+
+                          return BlocBuilder<UserBloc, UserState>(
+                            builder: (context, state) {
+                              if (state is UserLoaded) {
+                                if (!data!.isEmpty) {
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: GridView.builder(
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          shrinkWrap: true,
+                                          gridDelegate:
+                                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                            crossAxisSpacing: 20,
+                                            mainAxisSpacing: 130,
+                                          ),
+                                          itemCount: data.length,
+                                          itemBuilder: (context, index) {
+                                            if (state2.isFilter == true) {
+                                              if (data[index]['colors'].any((color) =>
+                                                      state2.selectedColors
+                                                          .contains(color[
+                                                              'colorName'])) &&
+                                                  (data[index]['colors'] as List<dynamic>).any(
+                                                      (color) => color['colorSizes']
+                                                          .any((size) => state2
+                                                              .selectedSizes
+                                                              .contains(size)))) {
+                                                return ProductCard(
+                                                  curr: state.currency,
+                                                  product: data[index],
+                                                  isLiked: (state.userLikes
+                                                          .contains(data[index]
+                                                              ['id']))
+                                                      ? true
+                                                      : false,
+                                                );
+                                              }
+                                            } else {
+                                              return ProductCard(
+                                                curr: state.currency,
+                                                product: data[index],
+                                                isLiked: (state.userLikes
+                                                        .contains(
+                                                            data[index]['id']))
+                                                    ? true
+                                                    : false,
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        height: 120,
+                                      )
+                                    ],
+                                  );
+                                } else {
+                                  return Center(
+                                    child: Text('Товары не найдено'),
+                                  );
+                                }
+                              }
+                              return Container(
+                                child: Text('Товары не найдено'),
+                              );
+                            },
+                          );
+                        },
+                      );
+                    }
+                    return Container(
+                      child: Text('asdasd'),
                     );
-                  }
-                  return Container(
-                    child: Text('asdasd'),
-                  );
-                },
+                  },
+                ),
               ),
             );
           }

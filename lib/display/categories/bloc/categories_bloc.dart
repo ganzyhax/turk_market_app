@@ -11,16 +11,31 @@ class CategoriesBloc extends Bloc<CategoriesEvent, CategoriesState> {
   CategoriesBloc() : super(CategoriesInitial()) {
     var data = [];
     int selectedSubCat = 0;
+    String selectedCategory = '';
+    String selectedMainCategory = '';
     List<Widget> tabs = [];
     on<CategoriesEvent>((event, emit) async {
       if (event is CategoriesLoad) {
         data = await FirestoreService().fetchDataFromFirestore('categories');
         print(data);
-        emit(CategoriesLoaded(data: data, selectedSub: selectedSubCat));
+        emit(CategoriesLoaded(
+          data: data,
+          selectedSub: selectedSubCat,
+          category: selectedCategory,
+          mainCategory: selectedMainCategory,
+        ));
       }
       if (event is CategoriesChooseIndexSubCategory) {
         selectedSubCat = event.index;
-        emit(CategoriesLoaded(data: data, selectedSub: selectedSubCat));
+        emit(CategoriesLoaded(
+            data: data,
+            selectedSub: selectedSubCat,
+            category: selectedCategory,
+            mainCategory: selectedMainCategory));
+      }
+      if (event is CategoriesSetSelectedCategory) {
+        selectedCategory = event.category;
+        selectedMainCategory = event.mainCategory;
       }
     });
   }

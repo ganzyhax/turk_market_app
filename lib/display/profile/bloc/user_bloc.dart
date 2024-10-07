@@ -24,6 +24,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     String userId = '';
     on<UserEvent>((event, emit) async {
       if (event is UserLoad) {
+        await FirestoreService().sortUserData();
         final SharedPreferences prefs = await SharedPreferences.getInstance();
         userId = await prefs.getString('id') ?? '';
         currency = await prefs.getDouble('currency') ?? 0.0;
@@ -219,16 +220,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
 
       if (event is UserAdressAdd) {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        String id = await prefs.getString('id') ?? '';
         userAdresses.add({
           'name': event.name,
           'city': event.city,
           'street': event.street,
           'phone': event.phone,
           'postcode': event.postcode,
-          'country': event.country
+          'country': event.country,
+          'id': id
         });
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        String id = await prefs.getString('id') ?? '';
         DocumentSnapshot<Map<String, dynamic>>? document =
             await FirestoreService().getDocumentById('users', id);
         Map<String, dynamic> data;

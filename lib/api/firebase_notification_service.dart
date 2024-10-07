@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +10,25 @@ class FirebaseNotificationService {
   Future<void> load() async {
     late final FirebaseMessaging _messaging;
     _messaging = FirebaseMessaging.instance;
+    if (Platform.isIOS) {
+      String? apnsToken = await _messaging.getAPNSToken();
+      if (apnsToken != null) {
+        await _messaging.subscribeToTopic('all');
+      } else {
+        await Future<void>.delayed(
+          const Duration(
+            seconds: 3,
+          ),
+        );
+        apnsToken = await _messaging.getAPNSToken();
+        if (apnsToken != null) {
+          await _messaging.subscribeToTopic('all');
+        }
+      }
+    } else {
+      await _messaging.subscribeToTopic('all');
+    }
+
     FirebaseMessaging.onBackgroundMessage(backgroundHandler);
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
@@ -50,7 +71,5 @@ class FirebaseNotificationService {
     }
   }
 
-  Future<void> backgroundHandler(RemoteMessage message) async {
-    print(message.toString());
-  }
+  Future<void> backgroundHandler(RemoteMessage message) async {}
 }

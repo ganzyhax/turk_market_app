@@ -37,24 +37,7 @@ class SignInScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const SignForm(),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SocalCard(
-                        icon: "assets/icons/google-icon.svg",
-                        press: () {},
-                      ),
-                      SocalCard(
-                        icon: "assets/icons/facebook-2.svg",
-                        press: () {},
-                      ),
-                      SocalCard(
-                        icon: "assets/icons/twitter.svg",
-                        press: () {},
-                      ),
-                    ],
-                  ),
+
                   const SizedBox(height: 20),
                   // const NoAccountText(),
                 ],

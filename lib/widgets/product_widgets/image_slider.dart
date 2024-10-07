@@ -17,22 +17,20 @@ class ImageSlider extends StatelessWidget {
   Widget build(BuildContext context) {
     images.removeAt(0);
     return SizedBox(
-      height: 350,
+      height: 500,
       child: PageView.builder(
         itemCount: images.length, // Use images.length here
         onPageChanged: onChange,
         controller:
             PageController(initialPage: currentImage), // Add PageController
         itemBuilder: (context, index) {
-          return PhotoView(
-            backgroundDecoration: BoxDecoration(
-              color: Colors.transparent, // Set a transparent background color
-            ),
-            minScale: PhotoViewComputedScale.contained,
-            imageProvider: NetworkImage(
-              images[index],
-            ),
-          ); // Use index to access images
+          return InteractiveViewer(
+              panEnabled: true,
+              child: Image.network(
+                images[index],
+                fit: BoxFit.cover,
+              ));
+          // Use index to access images
         },
       ),
     );

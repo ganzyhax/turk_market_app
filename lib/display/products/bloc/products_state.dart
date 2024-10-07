@@ -1,12 +1,11 @@
 part of 'products_bloc.dart';
 
-@immutable
 sealed class ProductsState {}
 
 final class ProductsInitial extends ProductsState {}
 
 final class ProductsLoaded extends ProductsState {
-  final Stream<QuerySnapshot<Map<String, dynamic>>> query;
+  StreamController<List<DocumentSnapshot>> query;
   List selectedColors = [];
   bool isFilter;
   List selectedSizes = [];

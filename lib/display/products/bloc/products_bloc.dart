@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,33 +11,95 @@ part 'products_state.dart';
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
   ProductsBloc() : super(ProductsInitial()) {
-    Stream<QuerySnapshot<Map<String, dynamic>>> query;
+    final int _perPage = 8;
+    Query query =
+        FirebaseFirestore.instance.collection('products').limit(_perPage);
+    ;
     List selectedColors = [];
-    bool isFilter = false;
+
     List selectedSizes = [];
-    double curr = 0;
+    bool canLoad = true;
+    DocumentSnapshot? _lastDocument = null;
+
+    List<DocumentSnapshot> _data = [];
+    StreamController<List<DocumentSnapshot>> _streamController =
+        StreamController();
     on<ProductsEvent>((event, emit) async {
-      if (event is ProductLoad) {}
-      if (event is ProductsSearhSubCategory) {
-        query = FirebaseFirestore.instance
-            .collection('products')
-            .where('subCategory', isEqualTo: event.subCategory)
-            .snapshots();
+      void _clearScrollData() {
+        StreamController<List<DocumentSnapshot>> _nstreamController =
+            StreamController();
+        _streamController = _nstreamController;
+        _lastDocument = null;
+        _data.clear();
+      }
+
+      void _loadData() {
+        if (_lastDocument != null) {
+          query = query.startAfterDocument(_lastDocument!);
+        }
+
+        query.snapshots().listen((snapshot) {
+          if (snapshot.docs.isNotEmpty) {
+            _lastDocument = snapshot.docs.last;
+            _data.addAll(snapshot.docs);
+            _data.toSet().toList();
+            _streamController.add(_data);
+          }
+        });
+        canLoad = true;
+      }
+
+      if (event is ProductsSearchLoadMoreScroll) {
+        if (canLoad) {
+          canLoad = false;
+          _loadData();
+        }
+
         emit(ProductsLoaded(
           selectedColors: selectedColors,
           isFilter: false,
           selectedSizes: selectedSizes,
-          query: query,
+          query: _streamController,
+        ));
+      }
+      if (event is ProductLoad) {
+        // _loadData();
+        // emit(ProductsLoaded(
+        //   selectedColors: selectedColors,
+        //   isFilter: false,
+        //   selectedSizes: selectedSizes,
+        //   query: _streamController,
+        // ));
+      }
+      if (event is ProductsSearhSubCategory) {
+        log(event.mainCategory);
+        log(event.category);
+        log(event.subCategory);
+        query = FirebaseFirestore.instance
+            .collection('products')
+            .where('mainCategory', isEqualTo: event.mainCategory)
+            .where('category', isEqualTo: event.category)
+            .where('subCategory', isEqualTo: event.subCategory)
+            .limit(_perPage);
+        _clearScrollData();
+        _loadData();
+        emit(ProductsLoaded(
+          selectedColors: selectedColors,
+          isFilter: false,
+          selectedSizes: selectedSizes,
+          query: _streamController,
         ));
       }
       if (event is ProductsSearhCategory) {
         query = FirebaseFirestore.instance
             .collection('products')
             .where('category', isEqualTo: event.category)
-            .snapshots();
+            .limit(_perPage);
+        _clearScrollData();
+        _loadData();
         emit(ProductsLoaded(
           isFilter: false,
-          query: query,
+          query: _streamController,
           selectedColors: selectedColors,
           selectedSizes: selectedSizes,
         ));
@@ -45,9 +108,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         query = FirebaseFirestore.instance
             .collection('products')
             .where('brand', isEqualTo: event.brand)
-            .snapshots();
+            .limit(_perPage);
+        _clearScrollData();
+        _loadData();
         emit(ProductsLoaded(
-          query: query,
+          query: _streamController,
           isFilter: false,
           selectedColors: selectedColors,
           selectedSizes: selectedSizes,
@@ -57,9 +122,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         query = FirebaseFirestore.instance
             .collection('products')
             .where('searchKey', arrayContains: event.input.toLowerCase())
-            .snapshots();
+            .limit(_perPage);
+        _clearScrollData();
+        _loadData();
         emit(ProductsLoaded(
-          query: query,
+          query: _streamController,
           isFilter: false,
           selectedColors: selectedColors,
           selectedSizes: selectedSizes,
@@ -69,9 +136,11 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
         query = FirebaseFirestore.instance
             .collection('products')
             .where('mainCategory', isEqualTo: event.sex)
-            .snapshots();
+            .limit(_perPage);
+        _clearScrollData();
+        _loadData();
         emit(ProductsLoaded(
-          query: query,
+          query: _streamController,
           isFilter: false,
           selectedColors: selectedColors,
           selectedSizes: selectedSizes,
@@ -80,7 +149,14 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       if (event is ProductsSearchFilter) {
         selectedColors = event.colors;
         selectedSizes = event.sizes;
+        print('mainCategory  :  ' + event.category);
+        print('category  :  ' + event.subCategory);
+        print('SubCategory : ' + event.subsubCategory);
+        print('brand : ' + event.brands.toString());
+        print('max  Price : ' + event.maxPrice.toString());
+        print('min  Price : ' + event.minPrice.toString());
         if (!event.brands.isEmpty) {
+          print('RUN THIS');
           query = FirebaseFirestore.instance
               .collection('products')
               .where('mainCategory', isEqualTo: event.category)
@@ -89,13 +165,17 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
                 isEqualTo: event.subCategory,
               )
               .where('subCategory', isEqualTo: event.subsubCategory)
-              .where('brand', arrayContains: event.brands)
-              .where('price', isLessThanOrEqualTo: event.maxPrice)
-              .where('price', isGreaterThanOrEqualTo: event.minPrice)
-              .snapshots();
+              .where('brand', whereIn: event.brands)
+              .where('price',
+                  isGreaterThanOrEqualTo: int.parse(event.minPrice.toString()))
+              .where('price',
+                  isLessThanOrEqualTo: int.parse(event.maxPrice.toString()))
+              .limit(_perPage);
+          _clearScrollData();
+          _loadData();
           emit(ProductsLoaded(
             isFilter: true,
-            query: query,
+            query: _streamController,
             selectedColors: selectedColors,
             selectedSizes: selectedSizes,
           ));
@@ -112,10 +192,12 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
                   isGreaterThanOrEqualTo: int.parse(event.minPrice.toString()))
               .where('price',
                   isLessThanOrEqualTo: int.parse(event.maxPrice.toString()))
-              .snapshots();
+              .limit(_perPage);
+          _clearScrollData();
+          _loadData();
           emit(ProductsLoaded(
             isFilter: true,
-            query: query,
+            query: _streamController,
             selectedColors: selectedColors,
             selectedSizes: selectedSizes,
           ));

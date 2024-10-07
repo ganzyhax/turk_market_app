@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -257,53 +259,80 @@ class _ChatScreenState extends State<ChatScreen> {
                             .snapshots(),
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
-                          if (!snapshot.hasData) {
-                            return SizedBox();
-                          } else {
-                            var userDocument = snapshot.data.data();
-                            userDocument['isUserRead'] = true;
-                            FirestoreService().updateDocument(
-                                'chats', state.userId + '?chat', userDocument);
-                            try {
-                              return ListView.builder(
-                                reverse: false,
-                                padding: EdgeInsets.all(20),
-                                itemCount: userDocument['chating'] != null
-                                    ? userDocument['chating'].length
-                                    : 0,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (userDocument['chating'][index]
-                                      .toString()
-                                      .contains('}sup')) {
-                                    return _chatBubble(
-                                        userDocument['chating'][index]
-                                            .toString()
-                                            .split('}')[0],
-                                        false,
-                                        true,
-                                        userDocument['isAdminRead'] ?? true,
-                                        (userDocument['chating'].length - 1 ==
-                                                index)
-                                            ? true
-                                            : false);
-                                  } else {
-                                    return _chatBubble(
-                                        userDocument['chating'][index]
-                                            .toString()
-                                            .split('}')[0],
-                                        true,
-                                        true,
-                                        userDocument['isAdminRead'] ?? true,
-                                        (userDocument['chating'].length - 1 ==
-                                                index)
-                                            ? true
-                                            : false);
-                                  }
-                                },
-                              );
-                            } catch (e) {}
-                            return Text('Чат');
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
                           }
+
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: Text(
+                                'Пусто',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          }
+                          print(snapshot.data.data());
+
+                          var userDocument = snapshot.data.data();
+
+                          try {
+                            if (!(userDocument['isUserRead'] ?? true)) {
+                              try {
+                                userDocument['isUserRead'] = true;
+                                FirestoreService().updateDocument('chats',
+                                    state.userId + '?chat', userDocument);
+                              } catch (e) {
+                                // Handle errors or log them, as necessary
+                                print(e.toString());
+                              }
+                            }
+                          } catch (e) {
+                            log(e.toString());
+                          }
+
+                          return ListView.builder(
+                            reverse: false,
+                            padding: EdgeInsets.all(20),
+                            itemCount: userDocument['chating'] != null
+                                ? userDocument['chating'].length
+                                : 0,
+                            itemBuilder: (BuildContext context, int index) {
+                              if (userDocument['chating'][index]
+                                  .toString()
+                                  .contains('}sup')) {
+                                return _chatBubble(
+                                    userDocument['chating'][index]
+                                        .toString()
+                                        .split('}')[0],
+                                    false,
+                                    true,
+                                    userDocument['isAdminRead'] ?? true,
+                                    (userDocument['chating'].length - 1 ==
+                                            index)
+                                        ? true
+                                        : false);
+                              } else {
+                                return _chatBubble(
+                                    userDocument['chating'][index]
+                                        .toString()
+                                        .split('}')[0],
+                                    true,
+                                    true,
+                                    userDocument['isAdminRead'] ?? true,
+                                    (userDocument['chating'].length - 1 ==
+                                            index)
+                                        ? true
+                                        : false);
+                              }
+                            },
+                          );
                         }),
                   ),
                   _sendMessageArea(),

@@ -7,6 +7,8 @@ import 'package:turkmarket_app/display/main/bloc/main_bloc.dart';
 import 'package:turkmarket_app/display/orders/orders_screen.dart';
 import 'package:turkmarket_app/display/payment/payment_screen.dart';
 import 'package:turkmarket_app/display/profile/bloc/user_bloc.dart';
+import 'package:turkmarket_app/gateway/gateway.dart';
+import 'package:turkmarket_app/widgets/alert/custom_alert.dart';
 
 import 'components/profile_menu.dart';
 import 'components/profile_pic.dart';
@@ -67,6 +69,36 @@ class ProfileScreen extends StatelessWidget {
                   //     );
                   //   },
                   // ),
+                  ProfileMenu(
+                    text: "Удалить аккаунт",
+                    icon: "assets/icons/remove.svg",
+                    press: () async {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CustomAlertDialog(
+                              secondButton: '  Нет  ',
+                              function: () async {
+                                await FirestoreService()
+                                    .deleteUser(state.userId);
+                                final SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+
+                                await prefs.setBool('isLogged', false);
+                                await prefs.setString('id', '');
+                                BlocProvider.of<MainBloc>(context)
+                                  ..add(MainChangeIndex(index: 2));
+                                BlocProvider.of<UserBloc>(context)
+                                  ..add(UserLoad());
+                                Navigator.pop(context);
+                              },
+                              alertTitle:
+                                  'Вы действительно хотите удалить аккаунт?',
+                              buttonText: '  Да  ');
+                        },
+                      );
+                    },
+                  ),
                   ProfileMenu(
                     text: "Выйти",
                     icon: "assets/icons/Log out.svg",

@@ -34,14 +34,6 @@ class ProductAppBar extends StatelessWidget {
                   icon: const Icon(Ionicons.chevron_back),
                 ),
                 const Spacer(),
-                IconButton(
-                  onPressed: () {},
-                  style: IconButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.all(15),
-                  ),
-                  icon: const Icon(Ionicons.share_social_outline),
-                ),
                 const SizedBox(width: 5),
                 IconButton(
                   onPressed: () async {
